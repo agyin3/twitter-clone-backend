@@ -7,13 +7,13 @@ const FollowerSchema = new Schema({
 })
 
 const UserSchema = new Schema({
-    name: { type: String, require: true },
-    bio: { type: String, require: true, maxlength: 200 },
+    name: { type: String, required: true },
+    bio: { type: String, maxlength: 200 },
     profile_img: { type: String },
     private: { type: Boolean, default: false },
     username: { type: String, required: true, unique: true, trim: true, minlength: 3, maxlength: 20},
     email: { type: String, unique: true },
-    password: { type: String, required: true, minlength: 8, maxlength: 20},
+    password: { type: String, required: true },
     phone: { type: String, unique: true },
     followers: [FollowerSchema],
     following: [FollowerSchema],
