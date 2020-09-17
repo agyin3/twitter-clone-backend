@@ -3,7 +3,8 @@ const bcrypt = require('bcryptjs')
 const genToken = require('../utils/genToken')
 
 module.exports = {
-    registerUser
+    registerUser,
+    loginUser
 }
 
 async function registerUser(req, res, next) {
@@ -36,4 +37,28 @@ async function registerUser(req, res, next) {
         res.status(500).json({...err})
     }
     
+}
+
+async function loginUser(req, res, next) {
+    let { username, password } = req.body
+
+    try{
+        const user = await User.findOne({ username })
+        
+        let saved = {...user._doc}
+
+        if(saved && bcrypt.compareSync(password, saved.password)) {
+            const token = genToken(saved)
+            delete saved.password
+
+            res.status(200).json({messgae: `Welcome Back ${saved.username}`, token, user: saved})
+        }else{
+            res.status(401).json({message: 'Invalid Credentials'})
+        }
+             
+            
+    }catch(err){
+        console.log(err);
+        res.status(500).json({...err})
+    }
 }
