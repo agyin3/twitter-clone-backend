@@ -2,11 +2,6 @@ const User = require('../data/models/User')
 const bcrypt = require('bcryptjs')
 const genToken = require('../utils/genToken')
 
-module.exports = {
-    registerUser,
-    loginUser
-}
-
 async function registerUser(req, res, next) {
     let userInfo = req.body
     const rounds = +process.env.SALT_ROUNDS
@@ -44,7 +39,7 @@ async function loginUser(req, res, next) {
 
     try{
         const user = await User.findOne({ username })
-        
+    
         let saved = {...user._doc}
 
         if(saved && bcrypt.compareSync(password, saved.password)) {
@@ -61,4 +56,9 @@ async function loginUser(req, res, next) {
         console.log(err);
         res.status(500).json({...err})
     }
+}
+
+module.exports = {
+    registerUser,
+    loginUser
 }
