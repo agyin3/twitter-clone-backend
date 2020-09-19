@@ -6,12 +6,10 @@ async function getAllUsers(req, res, next) {
     const users = await User.find({});
     res.status(200).json({ users });
   } catch (err) {
-    res
-      .status(500)
-      .json({
-        message: "There was an error retrieving the users from the database",
-        error: err,
-      });
+    res.status(500).json({
+      message: "There was an error retrieving the users from the database",
+      error: err,
+    });
   }
 }
 
@@ -29,12 +27,10 @@ async function getUserFollowers(req, res, next) {
 
     res.status(200).json({ user: followers });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        message: "There was an error retrieving the users from the database",
-        error: err,
-      });
+    res.status(500).json({
+      message: "There was an error retrieving the users from the database",
+      error: err,
+    });
   }
 }
 
@@ -44,24 +40,42 @@ async function requestFriend(req, res, next) {
   const user = res.locals.user;
 
   try {
-    // Create new Follower 
-    const friend = new Follower({
+    // Create new Follower (user being followed)
+    const following_friend = new Follower({
       user: friend_id,
       status: user.private ? 1 : 2,
     });
-    
-    // Add Follower to the user following array
-    const updated_user = await User.findByIdAndUpdate(
+
+    // Create new Follower (user sending request)
+    const follower_friend = new Follower({
+      user: id,
+      status: user.private ? 1 : 2,
+    });
+
+    // Add Follower to the user(user sending request) following array
+    const updated_follower = await User.findByIdAndUpdate(
       id,
-      { following: [...user.following, friend] },
+      { $push: { following: following_friend } },
       { new: true }
     );
-    res.status(201).json({message: 'Friend request successfully sent', user: updated_user})
-  }catch(err){
+
+    // Add Follower to the user(user being followed) followers array
+    const updated_following = await User.findByIdAndUpdate(
+      friend_id,
+      { $push: { followers: follower_friend } },
+      { new: true }
+    );
+
+    res.status(201).json({
+      message: "Friend request successfully sent",
+      user: updated_follower,
+      friend: updated_following,
+    });
+  } catch (err) {
     res.status(500).json({
-        message: "There was an error retrieving the users from the database",
-        error: err, 
-    })
+      message: "There was an error retrieving the users from the database",
+      error: err,
+    });
   }
 }
 
@@ -69,5 +83,5 @@ module.exports = {
   getAllUsers,
   getSingleUser,
   getUserFollowers,
-  requestFriend
+  requestFriend,
 };
