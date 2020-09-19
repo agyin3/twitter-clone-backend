@@ -2,8 +2,8 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const TweetSchema = new Schema({
-    postedBy: { type: Schema.Types.ObjectId, ref: 'Users', require: true},
-    text: { type: String, require: true, maxlength: 200},
+    postedBy: { type: Schema.Types.ObjectId, ref: 'Users', required: true},
+    text: { type: String, required: true, maxlength: 200},
     location: String,
     likes: [{ type: Schema.Types.ObjectId, ref: 'User'}],
     retweets: [{ type: Schema.Types.ObjectId, ref: 'User'}],
