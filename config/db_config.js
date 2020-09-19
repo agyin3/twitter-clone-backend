@@ -4,7 +4,7 @@ mongoose.set('useCreateIndex', true)
 
 const url = `${process.env.DB_URL}${process.env.DB_NAME}`
 
-mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false })
 
 module.exports = mongoose
 

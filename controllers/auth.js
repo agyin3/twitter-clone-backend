@@ -23,13 +23,20 @@ async function registerUser(req, res, next) {
         // Generate JWT Token
         const token = genToken(saved_user)
 
-        // Send response to client
-        saved ? 
-            res.status(201).json({message: 'User Successfully Registered', token, user: saved_user}) :
-            res.status(400).json({message: 'Registration unsuccessful, please try again'}) 
+        // Send response to client if successful
+        if(saved){
+            res.status(201).json({message: 'User Successfully Registered', token, user: saved_user})
+        }else{
+            throw new Error('Registration unsuccessful, please try again')
+        }
+            
 
     }catch(err) {
-        res.status(500).json({...err})
+        if(err.message.includes('Registration')){
+            res.status(400).json({message: err.message, error: err}) 
+        }else{
+            res.status(500).json({...err})
+        }
     }
     
 }
@@ -42,18 +49,19 @@ async function loginUser(req, res, next) {
     
         let saved = {...user._doc}
 
+        // Checking if a user with `username` was found 
+        // and that the hashed passwords match
         if(saved && bcrypt.compareSync(password, saved.password)) {
             const token = genToken(saved)
             delete saved.password
 
-            res.status(200).json({messgae: `Welcome Back ${saved.username}`, token, user: saved})
+            res.status(200).json({message: `Welcome Back ${saved.username}`, token, user: saved})
         }else{
             res.status(401).json({message: 'Invalid Credentials'})
         }
              
             
     }catch(err){
-        console.log(err);
         res.status(500).json({...err})
     }
 }
