@@ -1,6 +1,6 @@
 const User = require('../data/models/User')
 
-module.exports = (req, res, next) => {
+module.exports = async (req, res, next) => {
     const { id } = req.params
 
     try{
